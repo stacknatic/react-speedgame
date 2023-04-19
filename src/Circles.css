@@ -1,0 +1,16 @@
+.circles-container{
+    display: flex;
+}
+.circle{
+    width: 100px;
+    height: 100px;
+    background-color: orange;
+    border-radius: 50%;
+    margin: 2rem;
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; */
+    
+}
+
