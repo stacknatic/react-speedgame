@@ -13,6 +13,10 @@ body{
   flex-direction: column;
  
 }
+.buttons{
+  display: flex;
+  justify-content: center;
+}
 
 button{
   padding: 0.3rem;
