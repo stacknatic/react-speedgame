@@ -44,12 +44,14 @@ class App extends Component {
     });
   }
 
+  randomValue;
   randomNumber = () => {
     let active = 0;
+    let newNumber = Math.floor(Math.random(circles.length) * 4);
     this.disableOthers()
 
 
-    switch (uniqueNumber()) {
+    switch (this.randomValue) {
       case 0:
         active = 0;
         // circles[0].disabled=false
@@ -98,22 +100,22 @@ class App extends Component {
         break;
 
       default:
-        // this.disableAll()
-        active = 5;
-        this.setState.disabled = true;
+        this.disableAll()
+        // active = 5;
+        // this.setState.disabled = true;
       }
       function uniqueNumber() {
-        let newNumber = Math.floor(Math.random(circles.length) * 4);
+       
         while (newNumber === active) {
           newNumber = Math.floor(Math.random(circles.length) * 4);
           console.log("trying");
         }
         return newNumber;
       }
-      let randomValue = uniqueNumber();
+      this.randomValue = uniqueNumber();
       
       console.log(`active number ${active}`);
-      console.log(`randomValue ${randomValue}`);
+      console.log(`randomValue ${this.randomValue}`);
     
     }
     
