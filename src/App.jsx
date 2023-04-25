@@ -54,22 +54,17 @@ class App extends Component {
     switch (this.randomValue) {
       case 0:
         active = 0;
-        // circles[0].disabled=false
         this.setState({
           [circles]: (circles[0].disabled = false),
         });
-        // this.disableAll()
         console.log("value is " + this.state.circles[0].value);
 
         break;
       case 1:
         active = 1;
-        // circles[1].disabled=false
-
         this.setState({
           [circles]: (circles[1].disabled = false),
         });
-        // this.disableAll()
 
         console.log("value is " + this.state.circles[1].value);
 
@@ -77,24 +72,20 @@ class App extends Component {
 
       case 2:
         active = 2;
-        // circles[2].disabled=false
 
         this.setState({
           [circles]: (circles[2].disabled = false),
         });
-        // this.disableAll()
         console.log("value is " + this.state.circles[2].value);
 
         break;
 
       case 3:
         active = 3;
-        // circles[3].disabled=false
 
         this.setState({
           [circles]: (circles[3].disabled = false),
         });
-        // this.disableAll()
         console.log("value is " + this.state.circles[3].value);
 
         break;
@@ -108,7 +99,6 @@ class App extends Component {
        
         while (newNumber === active) {
           newNumber = Math.floor(Math.random(circles.length) * 4);
-          console.log("trying");
         }
         return newNumber;
       }
@@ -141,13 +131,15 @@ class App extends Component {
       console.log("on");
       // this.randomNumber();
       clearInterval(this.intervalId);
-        this.intervalId = setInterval(this.randomNumber, 3000)
+        this.intervalId = setInterval(this.randomNumber, 1000)
 
     
 
       
     }
      else {
+      clearInterval(this.intervalId);
+
       this.setState({
         endButton: true,
         startButton: false,
