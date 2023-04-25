@@ -11,25 +11,45 @@
 .circle{
     width: 100px;
     height: 100px;
-    background-color: orange;
+    /* background-color: orange; */
     border-radius: 50%;
     margin: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    
+    filter: brightness(50%)
+
 }
+.circle.one{
+    background-color: lightblue;
+
+
+}
+.circle.two{
+    background-color: tan;
+
+}
+.circle.three{
+    background-color: yellow;
+
+}
+.circle.four{
+    background-color: pink;
+
+}
+
 .circle.active{
+    filter: brightness(1)
+
+}
+/* .circle.active{
     width: 100px;
     height: 100px;
     background: url('squirrel.jpg') no-repeat center/cover;
     border-radius: 50%;
     margin: 2rem;
-    /* display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap; */
+   
     
-}
+} */
 
