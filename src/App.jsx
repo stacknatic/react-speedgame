@@ -1,13 +1,15 @@
 import "./App.css";
 import "./Circles.css";
+import './Modal.css';
 import React, { Component } from "react";
 import Circle from "./Components/Circle";
+import Modal from "./Components/Modal";
 
 let circles = [
-  { id: 1, value: 1, disabled: true, className: "circle one", active: false},
-  { id: 2, value: 2, disabled: true, className: "circle two", active: false},
-  { id: 3, value: 3, disabled: true, className: "circle three", active: false},
-  { id: 4, value: 4, disabled: true, className: "circle four", active: false},
+  { id: 1, value: 0, disabled: true, className: "circle one", active: false},
+  { id: 2, value: 1, disabled: true, className: "circle two", active: false},
+  { id: 3, value: 2, disabled: true, className: "circle three", active: false},
+  { id: 4, value: 3, disabled: true, className: "circle four", active: false},
 ];
 
 class App extends Component {
@@ -18,7 +20,11 @@ class App extends Component {
     endButton: true,
     disabled: true,
     value: "",
-    circles: circles
+    activeNumber: 5,
+    circles: circles,
+    gameover: false,
+    timeout: 1000,
+    showModal: false
 
   };
 
@@ -38,134 +44,153 @@ class App extends Component {
       });
     }
   };
-  // disableOthers(){
-  //   circles = this.state.circles
-  //   this.state.circles.map((circle) => {
-  //     return this.setState({
-  //       [circle]: (circle.disabled = true),
-      
-  //     });
-  //   });
-  // }
+  
   deactivateCircles(){
     circles = this.state.circles
     this.state.circles.map((circle) => {
       return this.setState({
         circle: circle.active = false,
-      
+
       });
     });
   }
- 
- 
 
   randomValue;
+  rounds = 0;
   randomNumber = () => {
-    this.deactivateCircles()
-    let button;
-    // this.disableAll()
-    // let newNumber = Math.floor(Math.random(circles.length) * 4);
     
-    
+      this.rounds = this.rounds + 1;
+      this.checkScores(this.rounds, this.misses)
+      this.deactivateCircles()
+      let activeNumber;
 
     switch (this.randomValue) {
       case 0:
-        button = 0;
+        activeNumber = 0;
         this.setState({
-          // [circles]: (circles[0].disabled = false),
           [circles]: (circles[0].active = true),
-          
-          
+          activeNumber: 0
         });
-      
+
         break;
 
-      case 1:
-        button = 1;
-        this.setState({
-          // [circles]: (circles[1].disabled = false),
-          [circles]: (circles[1].active = true),
-          
-        });
-       
-        break;
+        case 1:
+          activeNumber = 1;
+          this.setState({
+            [circles]: (circles[1].active = true),
+            activeNumber: 1
+          });
+          break;
 
-      case 2:
-        button = 2;
-        this.setState({
-          // [circles]: (circles[2].disabled = false),
-          [circles]: (circles[2].active = true),
-          
-        });
-     
-        break;
+          case 2:
+            activeNumber = 2;
+            this.setState({
+              [circles]: (circles[2].active = true),
+              activeNumber: 2
+            });
+            break;
 
-      case 3:
-        button = 3;
-        this.setState({
-          // [circles]: (circles[3].disabled = false),
-          [circles]: (circles[3].active = true),
-          
-        });
-       
-        break;
+            case 3:
+              activeNumber = 3;
+              this.setState({
+                [circles]: (circles[3].active = true),
+                activeNumber: 3
+              });
+              break;
 
-      default:
-        // active = 5;
-        // this.setState.disabled = true;
-      }
-      function uniqueNumber() {
-        let newNumber = Math.floor(Math.random(circles.length) * 4);
-       
-        while (newNumber === button) {
-          newNumber = Math.floor(Math.random(circles.length) * 4);
-        }
-        return newNumber;
-      }
-      this.randomValue = uniqueNumber();
-      
-      console.log(`active number ${button}`);
-      // console.log(`randomValue ${this.randomValue}`);
-    
-    }
-    
+              default:
+                this.deactivateCircles()
+
+              }
+              function uniqueNumber() {
+                let newNumber = Math.floor(Math.random(circles.length) * 4);
+
+                while (newNumber === activeNumber) {
+                  newNumber = Math.floor(Math.random(circles.length) * 4);
+                }
+                return newNumber;
+              }
+              this.randomValue = uniqueNumber();
 
 
-  clickHandler = (e) => {
-    e.target.disabled = true;
-    // e.target.className = "circle active";
+             
+              console.log(`active number ${activeNumber}`);
+              console.log("round is " + this.rounds);
+
+              clearInterval(this.intervalId);
+    this.intervalId = setInterval(this.randomNumber, this.state.timeout)
+
     this.setState({
-      score: this.state.score + 10,
-      value: "clicked",
-      // disabled: true
-    });
-    console.log(e.target.value);
+
+      timeout: this.state.timeout-10
+    })
+
+
+
+            }
+            misses = 0;
+  clickHandler = (e) => {
+    if(+this.state.activeNumber === +e.target.value){
+      this.setState({
+        score: this.state.score + 10,
+        value: "clicked",
+      });
+    }
+    else{
+      this.misses = this.misses + 1;
+      if(this.misses >= 3){
+        alert('game over')
+        window.location.reload()
+      }
+    }
+    console.log('misses ' + this.misses)
   };
+
   startHandler = (e) => {
     if (e.target.name === "start") {
+      this.misses = 0;
+      this.rounds = 0;
       this.setState({
         startButton: true,
         endButton: false,
         start: true,
       });
       this.disableAll()
-      clearInterval(this.intervalId);
-        this.intervalId = setInterval(this.randomNumber, 1000)
-      
+      // clearInterval(this.intervalId);
+        this.intervalId = setInterval(this.randomNumber, this.state.timeout)
+
     }
      else {
-      this.deactivateCircles()
-       
-       this.setState({
-         endButton: true,
-         startButton: false,
-         start: false,
-        });
+      
 
-        this.disableAll();
-        clearInterval(this.intervalId);
+        // alert('Thanks for playing');
+        this.disableAll()
+        this.setState({
+          showModal: true
+        })
+        // window.location.reload()
 
     }
+  };
+
+  checkScores(r, m){
+    if(r - m > 4){
+      this.disableAll()
+      //  alert('good job');
+       this.setState({
+        showModal: true
+      })
+      //  window.location.reload()
+    }
+
+  }
+
+  modalHandler = (e) => {
+    e.preventDefault();
+    // this.setState({
+    //   // showModal: !this.state.showModal,
+    // });
+    window.location.reload()
   };
 
   Button = () => {
@@ -201,6 +226,7 @@ class App extends Component {
               clickHandler={this.clickHandler}
               disabled={circle.disabled}
 
+
               className={circle.className}
 
             />
@@ -217,6 +243,19 @@ class App extends Component {
           <p>
             Score: <span>{this.state.score}</span>
           </p>
+          {this.state.showModal && (
+
+        <Modal 
+        score={this.state.score}
+        click={this.modalHandler}
+        />
+          )}
+          {/* {this.state.showModal && (
+          <Modal
+            click={this.modalHandler}
+            {...this.state} // better than listing 
+          />
+        )} */}
         </div>
         <div className="circles-container">
           <Circles />
