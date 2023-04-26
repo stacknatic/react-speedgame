@@ -167,6 +167,7 @@ this.fastShutter.play();
       if (this.state.misses >= 2) {
       
         clearInterval(this.intervalId);
+        this.slowShutter.play()
         this.feedback();
         this.setState({
           startButton: true,
@@ -221,7 +222,6 @@ this.slowShutter.play();
         startButton: true,
         endButton: true,
         start: false,
-       
         showModal: true,
       });
       clearInterval(this.intervalId);
