@@ -24,4 +24,9 @@ button{
   font-weight: bold;
   font-size: 1.2rem;
 }
-
+.start-button.hide{
+  display: none;
+}
+.end-button.hide{
+  display: none;
+}
