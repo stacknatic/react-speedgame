@@ -26,9 +26,37 @@ class App extends Component {
     timeout: 1000,
     showModal: false,
     misses: 0,
-    rounds: 0,
+    rounds: 1,
+    feedback: ''
 
   };
+
+  feedback = () => {
+    let score = this.state.score
+    if(score <= 10){
+      this.setState({
+        feedback: 'Common, you can definitely do better.'
+      })
+    }
+    else if(score > 10 && score < 70){
+      this.setState({
+        feedback: 'Not bad'
+      })
+    }
+    else if(score > 70 && score < 120){
+      this.setState({
+        feedback: 'Good shots'
+      })
+    }
+    else{
+      this.setState({
+        feedback: 'Nice and steady! Paparazzi style'
+      })
+    }
+   
+
+    
+  }
 
   disableAll = () => {
     if (this.state.start === true) {
@@ -51,7 +79,7 @@ class App extends Component {
     // circles = this.state.circles
     this.state.circles.map((circle) => {
       return this.setState({
-        [circle]: circle.active = false,
+        circle: circle.active = false,
 
       });
     });
@@ -60,9 +88,9 @@ class App extends Component {
   randomValue;
   // rounds = 0;
   randomNumber = () => {
-    this.setState({
-      rounds: this.state.rounds + 1
-    })
+    // this.setState({
+    //   rounds: this.state.rounds + 1
+    // })
     
       // this.state.rounds = this.state.rounds + 1;
       // this.checkScores(this.rounds, this.misses)
@@ -117,56 +145,75 @@ class App extends Component {
               }
               this.randomValue = uniqueNumber();
 
-
-             
-              console.log(`active number ${activeNumber}`);
-              console.log("round is " + this.rounds);
-
               clearInterval(this.intervalId);
     this.intervalId = setInterval(this.randomNumber, this.state.timeout)
 
     this.setState({
 
-      timeout: this.state.timeout-20
+      timeout: this.state.timeout-20,
+      rounds: this.state.rounds + 1
     })
-    this.checkScores(this.rounds, this.misses)
+    this.checkScores(this.state.rounds, this.state.misses)
 
 
 
             }
-            misses = 0;
+            // misses = 0;
   clickHandler = (e) => {
+   
     if(+this.state.activeNumber === +e.target.value){
       this.setState({
+        active: false,
         score: this.state.score + 10,
-        value: "clicked",
+        // value: "clicked",
       });
+      
     }
     else{
-      this.misses = this.misses + 1;
-      if(this.misses >= 3){
+      this.setState({
+
+        misses: this.state.misses + 1
+      })
+      if(this.state.misses >= 2){
         // alert('game over')
-        // window.location.reload()
-        this.randomNumber = null
-        this.clickHandler = null
+        // this.randomNumber = null
+        // clearInterval(this.intervalId)
+        // this.feedback()
+        // this.setState({
+         
+        //   showModal: true,
+        //   endButton: true,
+        //   disable: false 
+        // })
+
+        this.feedback()
         this.setState({
-          showModal: true,
-          endButton: true,
-          disable: false 
-        })
+            startButton: true,
+            endButton: true,
+            start: false,
+            // timeout: 0,
+            // misses: 0,
+            // rounds: 0,
+            showModal: true
+            // disable: true
+          });
+          clearInterval(this.intervalId)
+          this.deactivateCircles()
+          this.disableAll()
       }
     }
-    console.log('misses ' + this.misses)
   };
 
   startHandler = (e) => {
     if (e.target.name === "start") {
-      this.misses = 0;
-      this.rounds = 0;
+      // this.misses = 0;
+      // this.rounds = 0;
       this.setState({
         startButton: true,
         endButton: false,
         start: true,
+        misses: 0,
+        rounds: 0
       });
       this.disableAll()
       clearInterval(this.intervalId);
@@ -177,6 +224,7 @@ class App extends Component {
       
 
         // alert('Thanks for playing');
+        clearInterval(this.intervalId)
         this.setState({
           startButton: false,
           endButton: true,
@@ -185,45 +233,52 @@ class App extends Component {
         });
         this.deactivateCircles()
         this.disableAll()
-        clearInterval(this.intervalId)
+        this.feedback()
         this.setState({
           showModal: true
         })
-        // window.location.reload()
 
     }
   };
 
   checkScores(r, m){
-    if(r - m > 8){
+    if(r - m >= 3){
+      this.feedback()
       this.setState({
-          startButton: false,
+          startButton: true,
           endButton: true,
           start: false,
-          timeout: 0
+          // timeout: 0,
+          // misses: 0,
+          // rounds: 0,
+          showModal: true
           // disable: true
         });
         clearInterval(this.intervalId)
         this.deactivateCircles()
         this.disableAll()
      
-      this.setState({
-        showModal: true
-      })
+      // this.setState({
+      //   showModal: true
+      // })
       
-      //  window.location.reload()
     }
 
   }
 
   modalHandler = (e) => {
     e.preventDefault();
-    clearInterval(this.intervalId)
+    // clearInterval(this.intervalId)
     
     this.setState({
       showModal: !this.state.showModal,
       start: false,
-      endButton: true
+      endButton: true,
+      misses: 0,
+      rounds: 0,
+      score: 0,
+      timeout: 1000,
+      startButton: false
 
 
     });
@@ -289,14 +344,10 @@ class App extends Component {
         <Modal 
         score={this.state.score}
         click={this.modalHandler}
+        feedback = {this.state.feedback}
         />
           )}
-          {/* {this.state.showModal && (
-          <Modal
-            click={this.modalHandler}
-            {...this.state} // better than listing 
-          />
-        )} */}
+         
         </div>
         <div className="circles-container">
           <Circles />

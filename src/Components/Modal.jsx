@@ -7,7 +7,7 @@ const Modal = (props) => {
       <div className="modal-box">
         <span className="modal-close-button" onClick={props.click}>x</span>
         <h2 id="game-score">score: {props.score}</h2>
-        <p className="feedback"></p>
+        <p className="feedback">{props.feedback}</p>
         <div>
           <figure>
 
