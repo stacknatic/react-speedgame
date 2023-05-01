@@ -4,9 +4,8 @@ import "./Modal.css";
 import React, { Component } from "react";
 import Circle from "./Components/Circle";
 import Modal from "./Components/Modal";
-import fast_shutter from '../src/assets/sounds/fast_shutter.mp3';
-import slow_shutter from '../src/assets/sounds/slow_shutter.mp3'
-
+import fast_shutter from "../src/assets/sounds/fast_shutter.mp3";
+import slow_shutter from "../src/assets/sounds/slow_shutter.mp3";
 
 let circles = [
   { id: 1, value: 0, disabled: true, className: "circle one", active: false },
@@ -29,14 +28,12 @@ class App extends Component {
     timeout: 1000,
     showModal: false,
     misses: 0,
-    rounds: 1,
+    rounds: 0,
     feedback: "",
-    point: 0
+    points: 0,
   };
   slowShutter = new Audio(slow_shutter);
   fastShutter = new Audio(fast_shutter);
-
-
 
   feedback = () => {
     let score = this.state.score;
@@ -59,7 +56,7 @@ class App extends Component {
     }
   };
 
-  disableAll = () => {
+  circleStatus = () => {
     if (this.state.start === true) {
       this.state.circles.map((circle) => {
         return this.setState({
@@ -86,13 +83,20 @@ class App extends Component {
   randomValue;
   count = 0;
   randomNumber = () => {
-    
     this.deactivateCircles();
-    let activeNumber;
+
+    const uniqueNumber = () => {
+      let newNumber = Math.floor(Math.random(circles.length) * 4);
+
+      while (newNumber === this.state.activeNumber) {
+        newNumber = Math.floor(Math.random(circles.length) * 4);
+      }
+      return newNumber;
+    };
+    this.randomValue = uniqueNumber();
 
     switch (this.randomValue) {
       case 0:
-        activeNumber = 0;
         this.setState({
           [circles]: (circles[0].active = true),
           activeNumber: 0,
@@ -101,7 +105,6 @@ class App extends Component {
         break;
 
       case 1:
-        activeNumber = 1;
         this.setState({
           [circles]: (circles[1].active = true),
           activeNumber: 1,
@@ -109,7 +112,6 @@ class App extends Component {
         break;
 
       case 2:
-        activeNumber = 2;
         this.setState({
           [circles]: (circles[2].active = true),
           activeNumber: 2,
@@ -117,7 +119,6 @@ class App extends Component {
         break;
 
       case 3:
-        activeNumber = 3;
         this.setState({
           [circles]: (circles[3].active = true),
           activeNumber: 3,
@@ -127,107 +128,74 @@ class App extends Component {
       default:
         this.deactivateCircles();
     }
-    function uniqueNumber() {
-      let newNumber = Math.floor(Math.random(circles.length) * 4);
-
-      while (newNumber === activeNumber) {
-        newNumber = Math.floor(Math.random(circles.length) * 4);
-      }
-      return newNumber;
-    }
-    this.randomValue = uniqueNumber();
 
     clearInterval(this.intervalId);
     this.intervalId = setInterval(this.randomNumber, this.state.timeout);
 
+    this.setState({
+      timeout: this.state.timeout - 50,
+      rounds: this.state.rounds + 1,
+    });
+
     this.count = this.count + 1;
 
-    if (this.count > 1) {
-      this.setState({
-        timeout: this.state.timeout - 20,
-        rounds: this.state.rounds + 1,
-      });
-    }
-
-    this.checkScores(this.state.rounds, this.state.point);
+    this.checkScores(this.state.rounds, this.state.points);
   };
+
+  freezeGame() {
+    clearInterval(this.intervalId);
+    this.slowShutter.play();
+    this.feedback();
+    this.setState({
+      startButton: true,
+      endButton: true,
+      start: false,
+      showModal: true,
+    });
+    this.deactivateCircles();
+    this.circleStatus();
+  }
 
   clickHandler = (e) => {
     this.fastShutter.playbackRate = 1;
-this.fastShutter.play();
+    this.fastShutter.play();
     if (+this.state.activeNumber === +e.target.value) {
       this.setState({
         score: this.state.score + 10,
-        point: this.state.point + 1
+        points: this.state.points + 1,
       });
     } else {
       this.setState({
         misses: this.state.misses + 1,
       });
       if (this.state.misses >= 2) {
-      
-        clearInterval(this.intervalId);
-        this.slowShutter.play()
-        this.feedback();
-        this.setState({
-          startButton: true,
-          endButton: true,
-          start: false,
-          showModal: true,
-        });
-        this.deactivateCircles();
-        this.disableAll();
+        this.freezeGame();
       }
     }
   };
 
   startHandler = (e) => {
-this.slowShutter.play();
-
+    this.slowShutter.play();
 
     if (e.target.name === "start") {
-     
       this.setState({
         startButton: true,
         endButton: false,
         start: true,
-        misses: 0,
-        rounds: 0,
       });
-      this.disableAll();
+      this.circleStatus();
       clearInterval(this.intervalId);
       this.intervalId = setInterval(this.randomNumber, this.state.timeout);
     } else {
       clearInterval(this.intervalId);
-      this.setState({
-        startButton: false,
-        endButton: true,
-       
-      });
-      this.deactivateCircles();
-      this.disableAll();
-      this.feedback();
-      this.setState({
-        showModal: true,
-      });
+
+      this.freezeGame();
     }
   };
 
-  checkScores(r, p) {
-    if (r - p >= 3) {
-    this.slowShutter.play();
-
-      this.feedback();
-      this.setState({
-        startButton: true,
-        endButton: true,
-        start: false,
-        showModal: true,
-      });
-      clearInterval(this.intervalId);
-      this.deactivateCircles();
-      this.disableAll();
-
+  checkScores(rounds, points) {
+    if (rounds - points >= 3) {
+      this.freezeGame();
     }
   }
 
@@ -239,11 +207,12 @@ this.slowShutter.play();
       start: false,
       endButton: true,
       misses: 0,
-      rounds: 0,
       score: 0,
       timeout: 1000,
       startButton: false,
-      feedback: ''
+      feedback: "",
+      rounds: 0,
+      points: 0,
     });
   };
 
@@ -277,7 +246,6 @@ this.slowShutter.play();
           <div key={circle.id}>
             <Circle
               active={circle.active}
-              // value={circle.value}
               id={circle.id}
               clickHandler={this.clickHandler}
               disabled={circle.disabled}
